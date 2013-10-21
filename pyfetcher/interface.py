@@ -74,6 +74,10 @@ class Console(object):
             sys.stderr.write(u'ERREUR: tapez un numero')
 
     @staticmethod
+    def films_menu(film_list):
+        Console.prompt("{} [rating: {}]".format(film.name, film.rating) for film in film_list)
+
+    @staticmethod
     def main_menu():
         print("")
         print(u"Tapez le code (ex: 0) d'interface (CTRL-C pour quitter): ")
@@ -82,7 +86,8 @@ class Console(object):
         if choice == '0':
             print(u"Rechercher film par nom: ")
             query = Console.prompt()
-            Console.crawler.search_film(query)
+            found_films = Console.crawler.search_film(query)
+            Console.films_menu(found_films)
         elif choice == '1':
             print(u"Rechercher serie par nom: ")
             query = Console.prompt()

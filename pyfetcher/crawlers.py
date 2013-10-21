@@ -147,4 +147,33 @@ class TubeplusCrawler(BaseCrawler):
         return found_series
 
     def search_film(self, search_query):
-        raise NotImplemented("Search serie is not implemented")
+        """Return a list of Film objects found by search_query"""
+
+        search_url = "{}search/movies/{}".format(
+            self.site_url, search_query.replace(' ', '+'))
+
+        search_page = self.fetch_page(search_url)
+        pq = PyQuery(search_page)
+
+        dom_search_list = pq(u".list_item")
+        found_films = []
+        for dom_item in dom_search_list:
+            film = Film()
+
+            # set title
+            film.name = pq(dom_item).find('img[border="0"]').show().attr('alt')
+
+            # set description
+            desc = pq(dom_item).find('.plot').text()
+            film.description = re.sub('\s', ' ', str(desc))  # remove newlines from description
+
+            # set rating
+            film.rating = pq(dom_item).find('span.rank_value').text()
+
+            # set page url
+            href = pq(dom_item).find('a.panel').attr('href')
+            film.retrieved_url = '{}{}'.format(self.site_url, href)
+
+            found_films.append(film)
+
+        return found_films
