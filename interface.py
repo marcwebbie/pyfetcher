@@ -33,6 +33,20 @@ class Console(object):
         return choice
 
     @staticmethod
+    def get_episode_urls(episode):
+        url_list = Console.crawler.get_episode_raw_urls(episode)
+        if url_list:
+            for url in url_list:
+                print(url)
+
+            # help message
+            print('')
+            print('====================================')
+            print('Télécharger fichier avec cURL example:')
+            print('  curl -c <nom_du_fichier.mp4> http://address.du.serveur.com/video.mp4')
+            print('====================================')
+
+    @staticmethod
     def series_menu(series):
         choice = Console.prompt(s.name for s in series)
         try:
@@ -50,11 +64,6 @@ class Console(object):
                         u"  [{0}] {1}".format(e.code, e.name) for e in season.episodes
                     )
 
-                # DEBUG ==========================
-                # import pdb
-                # pdb.set_trace()
-                # DEBUG ==========================
-
                 episode_chosen_cod = Console.prompt(choice_list, enum_choices=False)
 
                 if serie_chosen.get_episode(episode_chosen_cod):
@@ -66,14 +75,16 @@ class Console(object):
 
     @staticmethod
     def main_menu():
+        print("")
+        print(u"Tapez le code (ex: 0) d'interface (CTRL-C pour quitter): ")
         search_options = [u'Film', u'Serie']
         choice = Console.prompt(choices=search_options)
         if choice == '0':
-            print(u"Rechercher film par nom (CTRL-C pour quitter): ")
+            print(u"Rechercher film par nom: ")
             query = Console.prompt()
             Console.crawler.search_film(query)
         elif choice == '1':
-            print(u"Rechercher serie par nom (CTRL-C pour quitter): ")
+            print(u"Rechercher serie par nom: ")
             query = Console.prompt()
             found_series = Console.crawler.search_serie(query)
             Console.series_menu(found_series)

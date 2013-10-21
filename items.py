@@ -8,7 +8,7 @@ class BaseMedia(object):
         self.thumbnail = None
         self.director = None
         self.actors = []
-        self.url = None
+        self.retrieved_url = None
 
 
 class Film(BaseMedia):
@@ -32,9 +32,9 @@ class Serie(BaseMedia):
         self.seasons.extend(season_list)
 
     def get_episode(self, episode_code):
-        for ep_found in self.episodes:
+        for ep_found in (e for e in self.episodes if e.code == episode_code):
             # at least one item was found
-            return ep_found[0]
+            return ep_found
 
     @property
     def episodes(self):
@@ -42,7 +42,8 @@ class Serie(BaseMedia):
         Get a list with all episodes in the list of seasons 
         """
         all_episodes = []
-        all_episodes.extend(season.episodes for season in (s for s in seasons))
+        for se in self.seasons:
+            all_episodes.extend(se.episodes)
         return all_episodes
 
 

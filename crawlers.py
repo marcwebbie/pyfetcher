@@ -13,6 +13,8 @@ except:
     range = xrange
 
 from pyquery import PyQuery
+
+import extractors
 from items import Film, Serie, Season, Episode
 
 
@@ -37,6 +39,31 @@ class TubeplusCrawler(BaseCrawler):
         self.site_url = "http://www.tubeplus.me/"
         super(TubeplusCrawler, self).__init__()  # to be ported
 
+    def get_episode_raw_urls(self, episode):
+        episode_page = self.fetch_page(episode.retrieved_url)
+        pq = PyQuery(episode_page)
+
+        url_list = []
+
+        # extract video_id and hostname from links and extract url
+        href_rgx = re.compile(
+            r"'(?P<vid>[\w]+)'[\s,]+'(?:[\w\s\-\":,\.`´\\]+)?'[\s,]+'(?P<host>[\w\.]+)'"
+        )
+        for href in (a.attrib.get('href') for a in pq('#links_list .link a:not([class])')):
+            video_host = re.search(href_rgx, href).group('host')
+            video_id = re.search(href_rgx, href).group('vid')
+
+            extor = extractors.get_by_hostname(video_host)
+            if extor:
+                # update user with a point
+                sys.stdout.write('.')
+                sys.stdout.flush()
+
+                url_list.append(extor.raw_url(video_id))
+
+        print('')
+        return [url for url in url_list if url]
+
     def get_seasons(self, serie):
         """
         Get a list of seasons for a given serie
@@ -53,8 +80,10 @@ class TubeplusCrawler(BaseCrawler):
         # build episodes
         episodes = []
         for link in links:
-            link = HTMLParser().unescape(unquote(link))
             episode = Episode()
+            episode.retrieved_url = "{}{}".format(self.site_url, link)
+
+            link = HTMLParser().unescape(unquote(link))
             title = re.search(rgx, link).group('title')
             episode.name = re.sub('_', ' ', title)
             episode.number = int(re.search(rgx, link).group('episode'))
