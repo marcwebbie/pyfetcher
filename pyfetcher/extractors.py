@@ -14,6 +14,8 @@ except:
 
 from pyquery import PyQuery as pq
 
+DEBUG = False
+
 
 class BaseExtractor:
 
@@ -79,7 +81,7 @@ class VidbullExtractor(BaseExtractor):
         # get script with the packed eval function
         d = pq(html_embed)
         script_text_raw = d('#player_code script:not([src])').text()
-        script_text = re.sub(r'\\', '', script_text_raw)
+        script_text = re.sub(r'\\', '', str(script_text_raw))
 
         rgx = re.compile(r"}\('(.+)',(\d+),(\d+),'([\w|]+)'")
 

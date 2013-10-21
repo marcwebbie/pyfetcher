@@ -17,6 +17,8 @@ from pyquery import PyQuery
 import extractors
 from items import Film, Serie, Season, Episode
 
+DEBUG = False
+
 
 class BaseCrawler(object):
 
@@ -47,11 +49,17 @@ class TubeplusCrawler(BaseCrawler):
 
         # extract video_id and hostname from links and extract url
         href_rgx = re.compile(
-            r"'(?P<vid>[\w]+)'[\s,]+'(?:[\w\s\-\":,\.`´\\]+)?'[\s,]+'(?P<host>[\w\.]+)'"
+            r"'(?P<vid>[\w\.:/\?\=\&]+)'[\s,]+'(?:[\w\s\-\":,\.`´\\]+)?'[\s,]+'(?P<host>[\w\.]+)'"
         )
         for href in (a.attrib.get('href') for a in pq('#links_list .link a:not([class])')):
-            video_host = re.search(href_rgx, href).group('host')
-            video_id = re.search(href_rgx, href).group('vid')
+            try:
+                video_host = re.search(href_rgx, href).group('host')
+                video_id = re.search(href_rgx, href).group('vid')
+            except AttributeError:
+                # if an exception occured the regex couldn't match something
+                if DEBUG:
+                    print("couldn't get video info from:", href)
+                continue
 
             extor = extractors.get_by_hostname(video_host)
             if extor:
@@ -131,12 +139,7 @@ class TubeplusCrawler(BaseCrawler):
             serie.description = re.sub('\s', ' ', str(desc))  # remove newlines from description
 
             # set rating
-            try:
-                rating = pq(dom_item).find('span.rank_value').text()
-                serie.rating = eval(rating)
-            except SyntaxError:
-                if self.DEBUG:
-                    print('error evaluating rating: %s ' % rating)
+            serie.rating = pq(dom_item).find('span.rank_value').text()
 
             # set page url
             href = pq(dom_item).find('a.panel').attr('href')
