@@ -25,6 +25,26 @@ class Serie(BaseMedia):
         # super().__init__(self)
         super(Serie, self).__init__()
 
+    def append_season(self, season):
+        self.seasons.append(season)
+
+    def extend_seasons(self, season_list):
+        self.seasons.extend(season_list)
+
+    def get_episode(self, episode_code):
+        for ep_found in self.episodes:
+            # at least one item was found
+            return ep_found[0]
+
+    @property
+    def episodes(self):
+        """ 
+        Get a list with all episodes in the list of seasons 
+        """
+        all_episodes = []
+        all_episodes.extend(season.episodes for season in (s for s in seasons))
+        return all_episodes
+
 
 class Season(BaseMedia):
 
@@ -33,6 +53,15 @@ class Season(BaseMedia):
         self.number = None
         # super().__init__(self)
         super(Season, self).__init__()
+
+    def get_episode(self, episode_code):
+        for ep_found in self.episodes:
+            # at least one item was found
+            return ep_found[0]
+
+    @property
+    def verbose_name(self):
+        return u"Season {0}".format(self.number)
 
 
 class Episode(BaseMedia):

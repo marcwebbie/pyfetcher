@@ -1,9 +1,13 @@
+# -*- coding: utf-8 -*-
 import re
 import sys
 try:
     from urllib.request import urlopen, Request
+    from urllib.parse import unquote
+    from html.parser import HTMLParser
 except:
-    from urllib2 import urlopen, Request
+    from urllib2 import urlopen, Request, unquote
+    from HTMLParser import HTMLParser
     input = raw_input
     str = unicode
     range = xrange
@@ -43,12 +47,13 @@ class TubeplusCrawler(BaseCrawler):
         pq = PyQuery(serie_page)
 
         rgx = re.compile(
-            r'/player/\d+/(?P<serie>\w+)/season_(?P<season>\d+)/episode_(?P<episode>\d+)/(?P<title>\w+)')
+            r"/player/\d+/(?P<serie>\w+)/season_(?P<season>\d+)/episode_(?P<episode>\d+)/(?P<title>[\w´`\'\",\.]+)")
         links = [a.attrib.get('href') for a in pq('.seasons[href]')]
 
         # build episodes
         episodes = []
         for link in links:
+            link = HTMLParser().unescape(unquote(link))
             episode = Episode()
             title = re.search(rgx, link).group('title')
             episode.name = re.sub('_', ' ', title)

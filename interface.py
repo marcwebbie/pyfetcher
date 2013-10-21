@@ -16,13 +16,19 @@ class Console(object):
     crawler = TubeplusCrawler()
 
     @staticmethod
-    def prompt(choices=None):
+    def prompt(choices=None, enum_choices=True):
         if choices:
-            for i, item in enumerate(choices):
-                if isinstance(item, (tuple, list)) and len(item) > 1:
-                    print(u"[{0}] {1}".format(item[0], item[1]))
+            try:
+                if enum_choices:
+                    for i, item in enumerate(choices):
+                        print(u"[{0}] {1}".format(i, item))
                 else:
-                    print(u"[{0}] {1}".format(i, item))
+                    for item in choices:
+                        print(item)
+            except TypeError:
+                sys.stderr.write("ERROR: choices isn't iterable")
+                pass
+
         choice = input('>>> ')
         return choice
 
@@ -34,15 +40,26 @@ class Console(object):
             serie_chosen = series[idx] if len(series) > idx else None
             if serie_chosen:
                 seasons = Console.crawler.get_seasons(serie=serie_chosen)
-                import pdb
-                pdb.set_trace()
+                serie_chosen.extend_seasons(seasons)
 
                 # build episode choice list
                 choice_list = []
-                for season in seasons:
-                    choice_list.append(u"Season {0}".format(season.number))
-                    choice_list.extend(u"  [{}] {}".format(e.code, e.name) for e in season.episodes)
-                Console.prompt(choice_list)
+                for season in serie_chosen.seasons:
+                    choice_list.append(season.verbose_name)
+                    choice_list.extend(
+                        u"  [{0}] {1}".format(e.code, e.name) for e in season.episodes
+                    )
+
+                # DEBUG ==========================
+                # import pdb
+                # pdb.set_trace()
+                # DEBUG ==========================
+
+                episode_chosen_cod = Console.prompt(choice_list, enum_choices=False)
+
+                if serie_chosen.get_episode(episode_chosen_cod):
+                    chosen_episode = serie_chosen.get_episode(episode_chosen_cod)
+                    Console.get_episode_urls(chosen_episode)
 
         except ValueError:
             sys.stderr.write(u'ERREUR: tapez un numero')
