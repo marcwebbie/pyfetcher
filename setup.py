@@ -20,7 +20,7 @@ setup(
     url='https://bitbucket.org/marcwebbie/pyfetcher/',
     packages=['pyfetcher'],
     scripts=['bin/pyfetcher'],
-    license='MIT'
+    license='MIT',
     install_requires=[
         'PyQuery',
     ],
