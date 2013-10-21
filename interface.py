@@ -1,5 +1,5 @@
-#!/usr/bin/env python
 # -*- coding: utf-8 -*-
+import sys
 try:
     from urllib2 import urlopen, Request
     input = raw_input
@@ -26,8 +26,16 @@ class Console(object):
         choice = input('>>> ')
         return choice
 
-    def search_menu(choices):
-        pass
+    @staticmethod
+    def series_menu(series):
+        choice = Console.prompt(s.name for s in series)
+        try:
+            idx = int(choice)
+            serie_chosen = series[idx] if len(series) > idx else None
+            if serie_chosen:
+                episodes = Console.crawler.get_seasons(serie=serie_chosen)
+        except ValueError:
+            sys.stderr.write('ERREUR: tapez un numero')
 
     @staticmethod
     def main_menu():
@@ -40,7 +48,8 @@ class Console(object):
         elif choice == '1':
             print("Rechercher serie par nom (CTRL-C pour quitter): ")
             query = Console.prompt()
-            search_series = Console.crawler.search_serie(query)
+            found_series = Console.crawler.search_serie(query)
+            Console.series_menu(found_series)
 
     @staticmethod
     def run():
