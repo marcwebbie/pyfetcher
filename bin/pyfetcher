@@ -1,0 +1,14 @@
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
+
+import os
+import sys
+
+if __name__ == "__main__":
+
+    # add pyfetcher to the path
+    import pyfetcher
+    sys.path.append(os.path.dirname(pyfetcher.__file__))
+
+    from pyfetcher import interface
+    interface.Console.run()
