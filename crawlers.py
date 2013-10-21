@@ -46,9 +46,6 @@ class TubeplusCrawler(BaseCrawler):
             r'/player/\d+/(?P<serie>\w+)/season_(?P<season>\d+)/episode_(?P<episode>\d+)/(?P<title>\w+)')
         links = [a.attrib.get('href') for a in pq('.seasons[href]')]
 
-        import pdb
-        pdb.set_trace()
-
         # build episodes
         episodes = []
         for link in links:
@@ -73,6 +70,7 @@ class TubeplusCrawler(BaseCrawler):
             # for e in ep_list:
             #     print(e.code, e.name)
             # DEBUG
+            seasons.append(season)
 
         # return seasons
         return seasons
