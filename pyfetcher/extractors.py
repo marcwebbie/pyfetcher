@@ -175,7 +175,7 @@ class NowVideoExtractor(BaseExtractor):
         # pdb.set_trace()
 
         # fetch response with containing raw url
-        html_response = self.fetch_page(api_url)
+        html_response = str(self.fetch_page(api_url))
 
         try:
             rgx = re.compile(r'url=(?P<rurl>http://[\w\.\-/&=?]+\.flv|mp4|avi|mk4|m4a)')
