@@ -62,6 +62,11 @@ class TubeplusCrawler(BaseCrawler):
                 continue
 
             extor = extractors.get_by_hostname(video_host)
+
+            if DEBUG:
+                print(href)
+                print('... {} - {} - {}'.format(video_host, video_id, extor))
+
             if extor:
                 # update user with a point
                 sys.stdout.write('.')
