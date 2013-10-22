@@ -48,7 +48,7 @@ class Console(object):
 
     @staticmethod
     def series_menu(series):
-        choice = Console.prompt("{} [note: {}]".format(s.name, s.rating) for s in series)
+        choice = Console.prompt(u"{} [note: {}]".format(s.name, s.rating) for s in series)
         try:
             idx = int(choice)
         except ValueError:
@@ -76,7 +76,7 @@ class Console(object):
 
     @staticmethod
     def films_menu(film_list):
-        fchoice = Console.prompt("{} [note: {}]".format(film.name, film.rating)
+        fchoice = Console.prompt(u"{} [note: {}]".format(film.name, film.rating)
                                  for film in film_list)
         try:
             idx = int(fchoice)
@@ -96,6 +96,8 @@ class Console(object):
             print('Télécharger fichier avec cURL example:')
             print('  curl -c <nom_du_fichier.mp4> http://address.du.serveur.com/video.mp4')
             print('====================================')
+        else:
+            print("Ce film n'a pas d'url disponible")
 
     @staticmethod
     def main_menu():
