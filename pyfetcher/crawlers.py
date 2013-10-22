@@ -3,9 +3,11 @@ import re
 import sys
 try:
     from urllib.request import urlopen, Request
-    from urllib.parse import unquote
+    from urllib.parse import unquote, quote_plus, urljoin
     from html.parser import HTMLParser
 except:
+    from urlparse import urljoin
+    from urllib import quote_plus
     from urllib2 import urlopen, Request, unquote
     from HTMLParser import HTMLParser
     input = raw_input
@@ -125,8 +127,8 @@ class TubeplusCrawler(BaseCrawler):
     def search_serie(self, search_query):
         """Return a list of Serie objects found by search_query"""
 
-        search_url = "{}search/tv-shows/{}".format(
-            self.site_url, search_query.replace(' ', '+'))
+        search_url = urljoin(self.site_url, "/search/tv-shows")
+        search_url = urljoin(search_url, quote_plus(search_query))
 
         search_page = self.fetch_page(search_url)
         pq = PyQuery(search_page)
@@ -157,8 +159,8 @@ class TubeplusCrawler(BaseCrawler):
     def search_film(self, search_query):
         """Return a list of Film objects found by search_query"""
 
-        search_url = "{}search/movies/{}".format(
-            self.site_url, search_query.replace(' ', '+'))
+        search_url = urljoin(self.site_url, "/search/movies/")
+        search_url = urljoin(search_url, quote_plus(search_query))
 
         search_page = self.fetch_page(search_url)
         pq = PyQuery(search_page)
