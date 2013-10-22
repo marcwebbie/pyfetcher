@@ -43,7 +43,7 @@ class Console(object):
             print('')
             print('====================================')
             print('Télécharger fichier avec cURL example:')
-            print('  curl -c <nom_du_fichier.mp4> http://address.du.serveur.com/video.mp4')
+            print('  curl -o <nom_du_fichier.mp4> http://address.du.serveur.com/video.mp4')
             print('====================================')
 
     @staticmethod
