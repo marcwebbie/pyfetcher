@@ -127,7 +127,7 @@ class TubeplusCrawler(BaseCrawler):
     def search_serie(self, search_query):
         """Return a list of Serie objects found by search_query"""
 
-        search_url = urljoin(self.site_url, "/search/tv-shows")
+        search_url = urljoin(self.site_url, "/search/tv-shows/")
         search_url = urljoin(search_url, quote_plus(search_query))
 
         search_page = self.fetch_page(search_url)
