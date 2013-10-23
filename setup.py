@@ -5,11 +5,6 @@ try:
 except ImportError:
     raise ImportError("Install setuptools: pip install setuptools")
 
-
-# def readme():
-#     with open('README') as f:
-#         return f.read()
-
 setup(
     name='PyFetcher',
     version='0.0.1',
@@ -21,6 +16,8 @@ setup(
     scripts=['bin/pyfetcher'],
     license='MIT',
     install_requires=[
-        'PyQuery',
+        'lxml',
+        'cssselect',
+        'pyquery',
     ],
 )
