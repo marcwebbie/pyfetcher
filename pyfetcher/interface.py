@@ -29,7 +29,7 @@ class Console(object):
                 sys.stderr.write("ERROR: choices isn't iterable")
                 pass
 
-        choice = input('>>> ')
+        choice = input('Input: ')
         return choice
 
     @staticmethod
