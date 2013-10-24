@@ -1,15 +1,16 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-import os
-import sys
-
 if __name__ == "__main__":
     # to test, from a virtualenv type
     # pip uninstall pyfetcher && python setup.py install && && python setup.py clean && pyfetcher
 
     # add pyfetcher to the path
+    import sys
+    import os
     import pyfetcher
-    sys.path.append(os.path.dirname(pyfetcher.__file__))
+
+    path = os.path.realpath(os.path.abspath(pyfetcher.__file__))
+    sys.path.append(os.path.dirname(path))
 
     pyfetcher.main()
