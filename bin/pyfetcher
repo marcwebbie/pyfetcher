@@ -5,6 +5,8 @@ import os
 import sys
 
 if __name__ == "__main__":
+    # to test, from a virtualenv type
+    # pip uninstall pyfetcher && python setup.py install && && python setup.py clean && pyfetcher
 
     # add pyfetcher to the path
     import pyfetcher

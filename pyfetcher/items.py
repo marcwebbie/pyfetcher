@@ -1,6 +1,7 @@
 class BaseMedia(object):
 
     def __init__(self):
+        self.code = None
         self.name = None
         self.description = None
         self.rating = None
@@ -11,19 +12,43 @@ class BaseMedia(object):
         self.retrieved_url = None
 
 
-class Film(BaseMedia):
+class Media(object):
+
+    def __init__(self):
+
+        self.name = None
+        self.season_num = None
+        self.episode_num = None
+        self.url = None
+        self.has_children = None
+
+    @property
+    def code(self):
+        if self.season_num and self.episode_num:
+            return u's{0:02d}e{1:02d}'.format(self.season_num, self.episode_num)
+
+        # additional metadata
+        self.description = None
+        self.rating = None
+        self.year = None
+        self.thumbnail = None
+        self.director = None
+        self.actors = []
+
+
+class Film(Media):
 
     def __init__(self):
         # super().__init__(self)
         super(Film, self).__init__()
 
 
-class Serie(BaseMedia):
+class TvShow(Media):
 
     def __init__(self):
         self.seasons = []
         # super().__init__(self)
-        super(Serie, self).__init__()
+        super(TvShow, self).__init__()
 
     def append_season(self, season):
         self.seasons.append(season)
@@ -47,13 +72,13 @@ class Serie(BaseMedia):
         return all_episodes
 
 
-class Season(BaseMedia):
+class Season(Media):
 
     def __init__(self):
-        self.episodes = []
-        self.number = None
         # super().__init__(self)
         super(Season, self).__init__()
+        self.episodes = []
+        self.number = None
 
     def get_episode(self, episode_code):
         for ep_found in self.episodes:
@@ -65,14 +90,18 @@ class Season(BaseMedia):
         return u"Season {0}".format(self.number)
 
 
-class Episode(BaseMedia):
+class Episode(Media):
 
     def __init__(self):
-        self.number = None
-        self.season_num = None
         # super().__init__(self)
         super(Episode, self).__init__()
+        self.number = None
+        self.season_num = None
 
     @property
     def code(self):
         return u's{0:02d}e{1:02d}'.format(self.season_num, self.number)
+
+
+def __init__():
+    pass
