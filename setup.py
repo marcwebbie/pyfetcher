@@ -12,7 +12,7 @@ pip uninstall pyfetcher && python setup.py install && python setup.py clean && p
 
 setup(
     name='PyFetcher',
-    version='0.0.1',
+    version='0.0.1-dev2',
     description='Python media streaming url fetcher',
     author='Marc Webbie',
     author_email='marcwebbie@gmail.com',
