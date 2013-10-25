@@ -16,6 +16,5 @@ if __package__ is None and not hasattr(sys, "frozen"):
     sys.path.append(os.path.dirname(os.path.dirname(path)))
 
 
-if __name__ == '__main__':
-    import pyfetcher
-    pyfetcher.main()
+import pyfetcher
+pyfetcher.main()

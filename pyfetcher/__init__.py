@@ -1,11 +1,10 @@
 import argparse
 import logging
 
-import crawlers
-import interface
-
 
 def get_crawler_list():
+    import crawlers
+
     crawler_list = crawlers.get_all_crawlers()
     return (c.name for c in crawler_list)
 
@@ -26,6 +25,9 @@ def get_args():
 
 
 def main():
+    import crawlers
+    import interface
+
     args = get_args()
 
     if args.list_crawler:
@@ -44,4 +46,5 @@ def main():
         crawler = crawlers.get_crawler(name=crawler_name)
 
         output_file = args.output_file
+
         interface.Console.run(crawler, output_file=output_file)
