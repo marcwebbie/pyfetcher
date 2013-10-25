@@ -1,10 +1,10 @@
 class Media(object):
 
-    def __init__(self, name, category):
+    def __init__(self, name, category, url=None):
 
         self.name = name
         self.category = category
-        self.url = None
+        self.url = url
 
         # additional metadata
         self.description = None
@@ -19,9 +19,9 @@ class Media(object):
 
     @property
     def verbose_name(self):
-        vname = u"{}, [{}]".format(self.name, self.category)
-        if self.season_num and self.episode_num:
-            return vname + u"[Season {} - Episode {}]".format(self.season_num, self.episode_num)
+        vname = u"{0}, [{1}]".format(self.name, self.category)
+        if self.code:
+            return vname + u"[Season {0} - Episode {1}]".format(self.season_num, self.episode_num)
         return vname
 
     @property
@@ -29,11 +29,27 @@ class Media(object):
         if self.season_num and self.episode_num:
             return u's{0:02d}e{1:02d}'.format(self.season_num, self.episode_num)
 
-    def __repr__(self):
-        return u":id:{0}:name:{1}:rating:{2}:url:{3}:thumbnail:{4}".format(
-            id(self),
-            self.name if self.name else "None",
-            self.rating if self.rating else "None",
-            self.url if self.url else "None",
-            self.thumbnail if self.thumbnail else "None",
+    def __str__(self):
+        return u"Media(name={0}, category={1}, url={2})".format(
+            self.name,
+            self.category,
+            self.url if self.url else "None"
         )
+
+    def __repr__(self):
+        return "{0} at {1}".format(str(self), hex(id(self)))
+
+
+class Stream(object):
+
+    def __init__(self, sid, host, url):
+        self.sid = sid
+        self.host = host
+        self.url = url
+
+    def __str__(self):
+        fstr = "Stream(sid={0}, host={1}, url={2})"
+        return fstr.format(self.sid, self.host, self.url)
+
+    def __repr__(self):
+        return "{0} at {1}".format(str(self), hex(id(self)))

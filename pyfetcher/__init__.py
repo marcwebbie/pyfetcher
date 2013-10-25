@@ -47,4 +47,8 @@ def main():
 
         output_file = args.output_file
 
-        interface.Console.run(crawler, output_file=output_file)
+        try:
+            interface.Console.run(crawler, output_file=output_file)
+        except KeyboardInterrupt:
+            print('')
+            pass

@@ -38,6 +38,19 @@ class BaseExtractor(object):
     def is_valid_url(self):
         pass
 
+    @property
+    def name(self):
+        return self.__class__.__name__.lower()
+
+    def __str__(self):
+        s = "{0}(name={1}, host_list={2})".format(
+            self.__class__.__name__,
+            self.name,
+            self.host_list
+        )
+
+        return s
+
 
 class NowVideoExtractor(BaseExtractor):
 
@@ -142,11 +155,11 @@ class NowVideoExtractor(BaseExtractor):
     """
 
     def __init__(self):
+        # super().__init__(self)
+        super(NowVideoExtractor, self).__init__()
         self.host_list = ["nowvideo.eu", "nowvideo.ch"]
         self.holder_url = "http://embed.nowvideo.sx/embed.php?v={}"
         self.regex_url = None
-        # super().__init__(self)
-        super(NowVideoExtractor, self).__init__()
 
     def raw_url(self, video_id):
         dest_url = self.holder_url.format(video_id)
@@ -187,11 +200,11 @@ class NowVideoExtractor(BaseExtractor):
 class GorillaVidExtractor(BaseExtractor):
 
     def __init__(self):
+        # super().__init__(self)
+        super(GorillaVidExtractor, self).__init__()
         self.host_list = ["gorillavid", "gorillavid.in"]
         self.holder_url = "http://gorillavid.in/embed-{}-650x400.html"
         self.regex_url = None
-        # super().__init__(self)
-        super(GorillaVidExtractor, self).__init__()
 
     def raw_url(self, video_id):
         dest_url = self.holder_url.format(video_id)
@@ -208,11 +221,11 @@ class GorillaVidExtractor(BaseExtractor):
 class VidbullExtractor(BaseExtractor):
 
     def __init__(self):
+        # super().__init__(self)
+        super(VidbullExtractor, self).__init__()
         self.host_list = ["vidbull.com"]
         self.holder_url = "http://vidbull.com/embed-{}-650x328.html"
         self.regex_url = None
-        # super().__init__(self)
-        super(VidbullExtractor, self).__init__()
 
     @staticmethod
     def baseconv(number, base=36):
@@ -286,11 +299,11 @@ class DivxStageExtractor(BaseExtractor):
     """
 
     def __init__(self):
+        # super().__init__(self)
+        super(DivxStageExtractor, self).__init__()
         self.host_list = ["divxstage.eu"]
         self.holder_url = "http://embed.divxstage.eu/embed.php?&width=653&height=438&v={}"
         self.regex_url = None
-        # super().__init__(self)
-        super(DivxStageExtractor, self).__init__()
 
     def raw_url(self, video_id):
         dest_url = self.holder_url.format(video_id)

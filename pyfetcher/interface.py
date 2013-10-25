@@ -54,7 +54,18 @@ class Console(object):
         return media_chosen
 
     @staticmethod
-    def search(crawler, show_progress):
+    def get_streams(crawler, media):
+        stream_list = crawler.extract(media)
+
+        if not stream_list:
+            logging.info(
+                "Couldn't find streams for media: {}".format(media)
+            )
+
+        return stream_list
+
+    @staticmethod
+    def search(crawler):
         query = Console.prompt(
             choice_list=None, text=u"Rechercher stream par nom (Ctrl-C pour quitter): ")
 
@@ -65,47 +76,56 @@ class Console(object):
 
             if media_chosen:
                 while media_chosen.has_children:
-                    logging.info("Chosen media has children: {}".format(media_chosen.verbose_name))
+                    logging.info("Chosen media has children: {}".format(media_chosen))
                     children = crawler.get_children(media_chosen)
                     media_chosen = Console.prompt(choice_list=children)
 
                     if not media_chosen:
                         return None
 
-                url_list = crawler.extract(media_chosen, show_progress=show_progress)
+                stream_list = Console.get_streams(crawler, media_chosen)
+                return stream_list
 
-                if not url_list:
-                    logging.info(
-                        "Couldn't find urls for media: {} -- {}".format(
-                            media_chosen.verbose_name, repr(media_chosen))
-                    )
+    @staticmethod
+    def get_url_list(stream_list, show_progress=False):
+        from pyfetcher import extractors
 
-                return url_list
+        url_list = []
+        for stream in stream_list:
+            extractor = extractors.get_by_hostname(stream.host)
+
+            if extractor:
+                download_url = extractor.raw_url(stream.sid)
+
+                if download_url:
+                    url_list.append(download_url)
+
+        return url_list
 
     @staticmethod
     def run(crawler, output_file=None, repeat=False):
-        try:
-            while True:
-                show_progress = True if output_file else False
-                url_list = Console.search(crawler, show_progress)
+        while True:
+            show_progress = True if output_file else False
+            stream_list = Console.search(crawler)
 
-                if url_list:
-                    logging.info('Extracted url_list count: {}'.format(len(url_list)))
-                    if output_file:
-                        with open(output_file, 'w') as out_f:
-                            out_f.write('\n'.join(url_list))
-                    else:
-                        print('\n'.join(url_list))
-                        print('')
-                        print('====================================')
-                        print('Télécharger fichier avec cURL example:')
-                        print(
-                            '  curl -o <nom_du_fichier.mp4> http://address.du.serveur.com/video.mp4')
-                        print('====================================')
+            if stream_list:
+                logging.info('Extracted streams count: {}'.format(len(stream_list)))
 
-                if not repeat:
-                    break
+                url_list = Console.get_url_list(stream_list, show_progress)
 
-        except KeyboardInterrupt:
-            print('')
-            pass
+                if output_file and url_list:
+                    with open(output_file, 'w') as out_f:
+                        out_f.write('\n'.join(url_list))
+                elif url_list:
+                    print('')
+                    print('\n'.join(url_list))
+                    print('')
+                    print('====================================')
+                    print('Télécharger fichier avec cURL example:')
+                    print('  curl -o <nom_du_fichier.mp4> http://address.du.serveur.com/video.mp4')
+                    print('====================================')
+                else:
+                    return None
+
+            if not repeat:
+                break
