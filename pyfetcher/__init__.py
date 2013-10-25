@@ -7,7 +7,7 @@ import interface
 
 def get_crawler_list():
     crawler_list = crawlers.get_all_crawlers()
-    return '\n'.join("> " + c.name for c in crawler_list)
+    return '\n'.join("\n\t> " + c.name for c in crawler_list)
 
 
 def main():
