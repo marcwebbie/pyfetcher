@@ -334,7 +334,7 @@ class DivxStageExtractor(BaseExtractor):
         # extract raw url from api_call result
         url_found = None
         try:
-            rgx = re.compile(r'url=(?P<rurl>http://[\w\.\-/&=?]+\.flv|mp4|avi|mk4|m4a)')
+            rgx = re.compile(r'url=(?P<rurl>http://[\w\.\-/=]+\.flv|mp4|avi|mk4|m4a)')
             url_found = rgx.search(api_result).group('rurl')
         except (IndexError, AttributeError):
             return None
