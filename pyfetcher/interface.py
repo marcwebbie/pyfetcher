@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 import logging
 
 try:
@@ -18,10 +19,20 @@ class Console(object):
         # print choices
         try:
             for idx, media in enumerate(choice_list):
+                fstr = u"[{0}] {1}"
                 if media.code:
-                    print(u"[{0}] {1}".format(media.code, media.name))
+                    line = fstr.format(media.code, media.name)
                 else:
-                    print(u"[{0}] {1}".format(idx, media.name))
+                    line = fstr.format(idx, media.name)
+
+                category = media.category
+                rating = media.rating
+                info = "[{0}, Rating: {1}]".format(category, rating)
+
+                # padding extra info
+                pad_size = 100
+                info_padded = "{0:>{1}}".format(info, pad_size - len(line))
+                print(line + info_padded)
         except TypeError:
             logging.error("ERROR: choices isn't iterable")
             pass
@@ -46,24 +57,25 @@ class Console(object):
         query = Console.prompt(
             choice_list=None, text=u"Rechercher stream par nom (Ctrl-C pour quitter): ")
 
-        search_result = crawler.search_tvshow(query)
+        search_result = crawler.search(query)
 
         if search_result:
             media_chosen = Console.prompt(choice_list=search_result)
 
-            while media_chosen.has_children:
-                logging.info("Chosen media has children: {}".format(media_chosen.name))
+            while media_chosen and media_chosen.has_children:
+                logging.info("Chosen media has children: {}".format(media_chosen.verbose_name))
                 children = crawler.get_children(media_chosen)
                 media_chosen = Console.prompt(choice_list=children)
 
-            url_list = crawler.extract(media_chosen)
+                url_list = crawler.extract(media_chosen)
 
-            if not url_list:
-                logging.info(
-                    "Couldn't find urls for media: {} -- {}".format(media_chosen.name, media_chosen)
-                )
+                if not url_list:
+                    logging.info(
+                        "Couldn't find urls for media: {} -- {}".format(
+                            media_chosen.verbose_name, repr(media_chosen))
+                    )
 
-            return url_list
+                return url_list
 
     @staticmethod
     def run(crawler, output_file=None, repeat=False):

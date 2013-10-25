@@ -1,8 +1,10 @@
 #!/usr/bin/env python
+from __future__ import print_function
 
 # Execute with
 # $ python pyfetcher/__main__.py (2.6+)
 # $ python -m pyfetcher (2.7+)
+
 import argparse
 import sys
 

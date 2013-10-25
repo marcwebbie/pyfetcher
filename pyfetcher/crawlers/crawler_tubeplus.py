@@ -1,16 +1,15 @@
 # -*- coding: utf-8 -*-
-
 import logging
 import re
 import sys
 try:
-    from urllib.request import urlopen, Request
+    from urllib.request import urlopen
     from urllib.parse import unquote, quote_plus, urljoin
     from html.parser import HTMLParser
 except:
     from urlparse import urljoin
     from urllib import quote_plus
-    from urllib2 import urlopen, Request, unquote
+    from urllib2 import urlopen, unquote
     from HTMLParser import HTMLParser
     input = raw_input
     str = unicode
@@ -20,10 +19,8 @@ from pyquery import PyQuery
 
 from pyfetcher import extractors
 from pyfetcher.crawlers.common import BaseCrawler, Search
-from pyfetcher.items import Media, Film, TvShow, Season, Episode
+from pyfetcher.items import Media
 from pyfetcher.utils import async
-
-DEBUG = True
 
 
 class TubeplusCrawler(BaseCrawler):
@@ -75,8 +72,7 @@ class TubeplusCrawler(BaseCrawler):
         media (Media) -> Media object to search for children
         """
 
-        logging.info('Searching children for media: {}'.format(media))
-        logging.info('Searching children for media.name: {}'.format(media.name))
+        logging.info('Searching children for media: {}'.format(media.verbose_name))
 
         media_page = self.fetch_page(media.url)
         pq = PyQuery(media_page)
@@ -88,17 +84,29 @@ class TubeplusCrawler(BaseCrawler):
         # build episodes
         episodes = []
         for link in links:
-            episode = Media()
 
-            episode.url = "{}{}".format(self.site_url, link)
+            title = re.search(rgx, link).group('title')
+            title = re.sub('_', ' ', title)
+            category = "Tv Show Episode"
+
+            episode = Media(name=title, category=category)
+
+            episode.url = urljoin(self.site_url, link)
 
             link = HTMLParser().unescape(unquote(link))
-            title = re.search(rgx, link).group('title')
-            episode.name = re.sub('_', ' ', title)
-
             episode.episode_num = int(re.search(rgx, link).group('episode'))
-
             episode.season_num = int(re.search(rgx, link).group('season'))
+
+            # imdb_url = pq(".imdb").attr('href')
+            # logging.info('imdb url for {}: {}'.format(episode.verbose_name, imdb_url))
+
+            # if imdb_url:
+            #     imdb_page = self.fetch_page(imdb_url)
+            #     pq_rating = PyQuery(imdb_page)
+
+            #     rating = pq_rating('span[itemprop=ratingValue]').text()
+            #     logging.info('imdb rating for {}: {}'.format(episode.verbose_name, rating))
+            #     episode.rating = rating + "/10" if rating else None
 
             episodes.append(episode)
 
@@ -120,12 +128,17 @@ class TubeplusCrawler(BaseCrawler):
         dom_search_list = pq(u".list_item")
         tvshow_list = []
         for dom_item in dom_search_list:
-            tvshow = Media()
-
-            tvshow.has_children = True
 
             # set title
-            tvshow.name = pq(dom_item).find('img[border="0"]').show().attr('alt')
+            name = pq(dom_item).find('img[border="0"]').show().attr('alt')
+
+            # add category
+            category = "Tv Show"
+
+            tvshow = Media(name=name, category=category)
+
+            # Since it is a tvshow we need to fetch the children episodes
+            tvshow.has_children = True
 
             # set description
             desc = pq(dom_item).find('.plot').text()
@@ -136,14 +149,20 @@ class TubeplusCrawler(BaseCrawler):
 
             # set page url
             href = pq(dom_item).find('a.panel').attr('href')
-            tvshow.url = '{}{}'.format(self.site_url, href)
+            tvshow.url = urljoin(self.site_url, href)
+
+            # set thumbnail url
+            href_thumbnail = pq(dom_item).find('img[border="0"]').show().attr('src')
+            tvshow.thumbnail = urljoin(self.site_url, href_thumbnail)
+
+            logging.info(tvshow)
 
             tvshow_list.append(tvshow)
 
         return tvshow_list
 
     def search_film(self, search_query):
-        """Return a list of Film objects found by search_query"""
+        """Return a list of Media objects found by search_query"""
 
         search_url = urljoin(self.site_url, "/search/movies/")
         search_url = urljoin(search_url, quote_plus(search_query))
@@ -154,21 +173,24 @@ class TubeplusCrawler(BaseCrawler):
         dom_search_list = pq(u".list_item")
         film_list = []
         for dom_item in dom_search_list:
-            film = Film()
+            name = pq(dom_item).find('img[border="0"]').show().attr('alt')
+            category = "Film"
 
-            # set title
-            film.name = pq(dom_item).find('img[border="0"]').show().attr('alt')
+            film = Media(name=name, category=category)
 
             # set description
             desc = pq(dom_item).find('.plot').text()
             film.description = re.sub('\s', ' ', str(desc))  # remove newlines from description
 
-            # set rating
             film.rating = pq(dom_item).find('span.rank_value').text()
 
             # set page url
             href = pq(dom_item).find('a.panel').attr('href')
-            film.retrieved_url = '{}{}'.format(self.site_url, href)
+            film.retrieved_url = urljoin(self.site_url, href)
+
+            # set thumbnail url
+            href_thumbnail = pq(dom_item).find('img[border="0"]').show().attr('src')
+            film.thumbnail = urljoin(self.site_url, href_thumbnail)
 
             film_list.append(film)
 
