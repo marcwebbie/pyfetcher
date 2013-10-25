@@ -46,6 +46,7 @@ class Console(object):
             # try indexing
             media_chosen = choice_list[int(choice)]
         except (IndexError, ValueError):
+            # try by code
             for media in (m for m in choice_list if m.code == choice):
                 # found at least one media with choice code
                 media_chosen = media
@@ -53,7 +54,7 @@ class Console(object):
         return media_chosen
 
     @staticmethod
-    def search(crawler):
+    def search(crawler, show_progress):
         query = Console.prompt(
             choice_list=None, text=u"Rechercher stream par nom (Ctrl-C pour quitter): ")
 
@@ -67,7 +68,7 @@ class Console(object):
                 children = crawler.get_children(media_chosen)
                 media_chosen = Console.prompt(choice_list=children)
 
-                url_list = crawler.extract(media_chosen)
+                url_list = crawler.extract(media_chosen, show_progress=show_progress)
 
                 if not url_list:
                     logging.info(
@@ -81,7 +82,8 @@ class Console(object):
     def run(crawler, output_file=None, repeat=False):
         try:
             while True:
-                url_list = Console.search(crawler)
+                show_progress = True if output_file else False
+                url_list = Console.search(crawler, show_progress)
 
                 if url_list:
                     logging.info('Extracted url_list count: {}'.format(len(url_list)))
