@@ -32,6 +32,10 @@ class TubeplusCrawler(BaseCrawler):
         self.site_url = "http://www.tubeplus.me/"
 
     def extract(self, media, show_progress=True):
+        logging.info("Extracting: {}".format(media))
+        if not media.url:
+            return None
+
         media_page = self.fetch_page(media.url)
         pq = PyQuery(media_page)
 
@@ -186,7 +190,7 @@ class TubeplusCrawler(BaseCrawler):
 
             # set page url
             href = pq(dom_item).find('a.panel').attr('href')
-            film.retrieved_url = urljoin(self.site_url, href)
+            film.url = urljoin(self.site_url, href)
 
             # set thumbnail url
             href_thumbnail = pq(dom_item).find('img[border="0"]').show().attr('src')

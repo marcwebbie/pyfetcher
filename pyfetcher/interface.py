@@ -63,10 +63,14 @@ class Console(object):
         if search_result:
             media_chosen = Console.prompt(choice_list=search_result)
 
-            while media_chosen and media_chosen.has_children:
-                logging.info("Chosen media has children: {}".format(media_chosen.verbose_name))
-                children = crawler.get_children(media_chosen)
-                media_chosen = Console.prompt(choice_list=children)
+            if media_chosen:
+                while media_chosen.has_children:
+                    logging.info("Chosen media has children: {}".format(media_chosen.verbose_name))
+                    children = crawler.get_children(media_chosen)
+                    media_chosen = Console.prompt(choice_list=children)
+
+                    if not media_chosen:
+                        return None
 
                 url_list = crawler.extract(media_chosen, show_progress=show_progress)
 
