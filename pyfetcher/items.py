@@ -43,13 +43,13 @@ class Media(object):
 class Stream(object):
 
     def __init__(self, sid, host, url):
-        self.sid = sid
+        self.id = sid
         self.host = host
         self.url = url
 
     def __str__(self):
         fstr = "Stream(sid={0}, host={1}, url={2})"
-        return fstr.format(self.sid, self.host, self.url)
+        return fstr.format(self.id, self.host, self.url)
 
     def __repr__(self):
         return "{0} at {1}".format(str(self), hex(id(self)))

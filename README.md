@@ -112,7 +112,7 @@ Contain the direct stream info. those are build by crawler.extract using info ex
 
 ```python
 class Stream(object):
-    self.video_id
+    self.id
     self.host 
     self.url
 ```

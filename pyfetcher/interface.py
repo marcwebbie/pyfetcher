@@ -95,7 +95,7 @@ class Console(object):
             extractor = extractors.get_by_hostname(stream.host)
 
             if extractor:
-                download_url = extractor.raw_url(stream.sid)
+                download_url = extractor.raw_url(stream.id)
 
                 if download_url:
                     url_list.append(download_url)
