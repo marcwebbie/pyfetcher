@@ -3,9 +3,10 @@ import re
 import sys
 try:
     from urllib.request import urlopen, Request
-    from urllib.parse import unquote, urlencode
+    from urllib.parse import unquote, urlencode, urljoin
     from html.parser import HTMLParser
 except:
+    from urlparse import urljoin
     from urllib import urlencode
     from urllib2 import urlopen, Request, unquote
     from HTMLParser import HTMLParser
@@ -354,11 +355,84 @@ class DivxStageExtractor(BaseExtractor):
 
         return(url_found)
 
+
+class PutLockerExtractor(BaseExtractor):
+
+    """ putlocker.com extractor
+    Video file is found on on source beginning with "/get_file.php?stream="
+    the rest of the request is alphanumeric example for videoid='9D0D3AA0DE8B38A4':
+    /get_file.php?stream=WyJPVVF3UkROQlFUQkVSVGhDTXpoQk5Eb3hNemd6TVRJeE16UXlMakExTVRnNllqTmpOV1ZqWW1Ga05HRmxaRGhqTnpRek0yWm1NbVk1TVRGaE1qRTBNRFl4TWpKaE5tUmlNZz09IiwiZW1iIl0=&"  
+    
+    testing:
+
+    # ==================================================
+from pyfetcher import extractors 
+
+e = extractors.get_by_hostname('putlocker.com')
+dl_url = e.raw_url('9D0D3AA0DE8B38A4')
+print('9D0D3AA0DE8B38A4')
+    # ==================================================
+
+    """
+
+    def __init__(self):
+        # super().__init__(self)
+        super(PutLockerExtractor, self).__init__()
+        self.host_list = ["putlocker.com"]
+        self.holder_url = src = "http://www.putlocker.com/embed/{}"
+        self.regex_url = None
+
+    def raw_url(self, video_id):
+
+        dest_url = self.holder_url.format(video_id)
+        html_embed = self.fetch_page(dest_url)
+        pq = PyQuery(html_embed)
+
+        # get form params 'fuck_you' and "confirm"
+        params = {}
+        params['fuck_you'] = pq('form input[name=fuck_you]').attr('value')
+        params['confirm'] = pq('form input[name=confirm]').attr('value')
+
+        # build params
+        query = urlencode(params)
+
+        # request webpage again as POST with query params to get real video page
+        response = urlopen(dest_url, query)
+        post_html = response.read()
+
+        # get api call url
+        try:
+            api_call = re.search(r'/get_file\.php\?stream=[\w\=]+', post_html).group()
+            api_call = "http://www.putlocker.com/{}".format(api_call)
+        except (IndexError, AttributeError):
+            logging.error(
+                ":{}:Couldn't build api call for video id: {}".format(self.name, video_id))
+            return None
+
+        # get api call html
+        api_html = self.fetch_page(api_call)
+
+        # get video url
+        url_found = None
+        try:
+            import pdb
+            pdb.set_trace()
+            url_rgx = re.compile(r'url="(http://[\w\-\.\?&/\=;%]*flv|mp4|avi|m4a)"')
+            url_found = url_rgx.search(api_html).group(1)
+        except (IndexError, AttributeError):
+            logging.error(
+                ":{}:Couldn't extract url from api call: {}".format(self.name, api_call))
+            return None
+
+        return url_found
+
+
 EXTRACTOR_INSTANCES = (
     GorillaVidExtractor(),
     VidbullExtractor(),
     NowVideoExtractor(),
     DivxStageExtractor(),
+    PutLockerExtractor(),
 )
 
 
