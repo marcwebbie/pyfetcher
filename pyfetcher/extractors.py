@@ -395,6 +395,8 @@ print('9D0D3AA0DE8B38A4')
 
         # build params
         query = urlencode(params)
+        if sys.version > '3':
+            query = bytes(urlencode(params), encoding='utf-8')
 
         # request webpage again as POST with query params to get real video page
         response = urlopen(dest_url, query)
