@@ -256,7 +256,7 @@ class VidbullExtractor(BaseExtractor):
                 p = re.sub(r'\b' + VidbullExtractor.baseconv(c, base=a) + r'\b', k[c], p)
         return p
 
-    def raw_url(self, video_id):
+    def raw_url(self, video_id, show_progress=False):
         dest_url = self.holder_url.format(video_id)
         html_embed = str(urlopen(dest_url).read())
 
