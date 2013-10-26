@@ -39,3 +39,17 @@ class ExampleCrawler(BaseCrawler):
     search(self, search_query):
         pass        
 ```
+
+
+## Investigating site
+
+```
+import re
+from pyfetcher.crawlers.common import BaseCrawler
+
+html = BaseCrawler.fetch_page("http://www.example.com")
+
+if re.search(r"example", html):
+    print("found!")
+
+```
