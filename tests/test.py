@@ -49,10 +49,5 @@ class CrawlersTestCase(unittest.TestCase):
         for result in search_result:
             self.assertIsInstance(result, items.Media)
 
-    def test_putlocker(self):
-        e = extractors.get_by_hostname('putlocker.com')
-        dl_url = e.raw_url('9D0D3AA0DE8B38A4')
-        self.assertNotEqual(dl_url, None)
-
 if __name__ == "__main__":
     unittest.main()

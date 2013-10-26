@@ -162,7 +162,7 @@ class NowVideoExtractor(BaseExtractor):
         self.holder_url = "http://embed.nowvideo.sx/embed.php?v={}"
         self.regex_url = None
 
-    def raw_url(self, video_id):
+    def raw_url(self, video_id, show_progress=False):
         dest_url = self.holder_url.format(video_id)
         html_embed = str(urlopen(dest_url).read())
 
@@ -193,7 +193,14 @@ class NowVideoExtractor(BaseExtractor):
             rgx = re.compile(r'url=(?P<rurl>http://[\w\.\-/&=?]+\.flv|mp4|avi|mk4|m4a)')
             url_found = re.search(rgx, html_response).group('rurl')
         except (IndexError, AttributeError):
-            loggin.error('url was not found in response: {}'.format(html_response))
+            loggin.info('url was not found in response: {}'.format(html_response))
+
+        if show_progress:
+            if url_found:
+                sys.stdout.write('.')
+            else:
+                sys.stdout.write('F')
+            sys.stdout.flush()
 
         return url_found
 
@@ -207,13 +214,17 @@ class GorillaVidExtractor(BaseExtractor):
         self.holder_url = "http://gorillavid.in/embed-{}-650x400.html"
         self.regex_url = None
 
-    def raw_url(self, video_id):
+    def raw_url(self, video_id, show_progress=False):
         dest_url = self.holder_url.format(video_id)
         html_embed = str(urlopen(dest_url).read())
-        found = re.findall(r'(http://[\w\./0-9:]+\.(?:mp4|flv))', html_embed)
+        url_found = re.findall(r'(http://[\w\./0-9:]+\.(?:mp4|flv))', html_embed)
 
-        if found:
-            return found[0]
+        if url_found and show_progress:
+            sys.stdout.write('.')
+            sys.stdout.flush()
+
+        if url_found:
+            return url_found[0]
 
     def is_valid_url(self):
         pass
@@ -262,20 +273,27 @@ class VidbullExtractor(BaseExtractor):
             parg3 = int(re.search(rgx, script_text).group(3))
             parg4 = re.search(rgx, script_text).group(4).split('|')
         except:
-            logging.error('ERROR trying to parse script text')
+            logging.info('Error trying to parse script text')
             return None
         try:
             unpacked_vars = self.unpacker(parg1, parg2, parg3, parg4)
         except:
-            logging.error('ERROR trying unpack script text')
+            logging.info('Error trying unpack script text')
             return None
         try:
-            raw = re.search(r'file:"([\w\.:/\-_]+)"', unpacked_vars).group(1)
+            url_found = re.search(r'file:"([\w\.:/\-_]+)"', unpacked_vars).group(1)
         except:
-            logging.error('ERROR file raw url not found in script unpacked')
+            logging.info('Error file url_found url not found in script unpacked')
             return None
 
-        return raw
+        if show_progress:
+            if url_found:
+                sys.stdout.write('.')
+            else:
+                sys.stdout.write('F')
+            sys.stdout.flush()
+
+        return url_found
 
     def is_valid_url(self):
         pass
@@ -306,7 +324,7 @@ class DivxStageExtractor(BaseExtractor):
         self.holder_url = "http://embed.divxstage.eu/embed.php?&width=653&height=438&v={}"
         self.regex_url = None
 
-    def raw_url(self, video_id):
+    def raw_url(self, video_id, show_progress=False):
         dest_url = self.holder_url.format(video_id)
         html_embed = self.fetch_page(dest_url)
 
@@ -353,7 +371,14 @@ class DivxStageExtractor(BaseExtractor):
         except (IndexError, AttributeError):
             return None
 
-        return(url_found)
+        if show_progress:
+            if url_found:
+                sys.stdout.write('.')
+            else:
+                sys.stdout.write('F')
+            sys.stdout.flush()
+
+        return url_found
 
 
 class PutLockerExtractor(BaseExtractor):
@@ -362,16 +387,6 @@ class PutLockerExtractor(BaseExtractor):
     Video file is found on on source beginning with "/get_file.php?stream="
     the rest of the request is alphanumeric example for videoid='9D0D3AA0DE8B38A4':
     /get_file.php?stream=WyJPVVF3UkROQlFUQkVSVGhDTXpoQk5Eb3hNemd6TVRJeE16UXlMakExTVRnNllqTmpOV1ZqWW1Ga05HRmxaRGhqTnpRek0yWm1NbVk1TVRGaE1qRTBNRFl4TWpKaE5tUmlNZz09IiwiZW1iIl0=&"  
-    
-    testing:
-
-    # ==================================================
-from pyfetcher import extractors 
-
-e = extractors.get_by_hostname('putlocker.com')
-dl_url = e.raw_url('9D0D3AA0DE8B38A4')
-print('9D0D3AA0DE8B38A4')
-    # ==================================================
 
     """
 
@@ -382,7 +397,7 @@ print('9D0D3AA0DE8B38A4')
         self.holder_url = src = "http://www.putlocker.com/embed/{}"
         self.regex_url = None
 
-    def raw_url(self, video_id):
+    def raw_url(self, video_id, show_progress=False):
 
         dest_url = self.holder_url.format(video_id)
         html_embed = self.fetch_page(dest_url)
@@ -407,7 +422,7 @@ print('9D0D3AA0DE8B38A4')
             api_call = re.search(r'/get_file\.php\?stream=[\w\=]+', post_html).group()
             api_call = "http://www.putlocker.com/{}".format(api_call)
         except (IndexError, AttributeError):
-            logging.error(
+            logging.info(
                 ":{}:Couldn't build api call for video id: {}".format(self.name, video_id))
             return None
 
@@ -420,9 +435,16 @@ print('9D0D3AA0DE8B38A4')
             url_rgx = re.compile(r'url="(http://[\w\-\.\?&/\=;%]*flv|mp4|avi|m4a)"')
             url_found = url_rgx.search(api_html).group(1)
         except (IndexError, AttributeError):
-            logging.error(
+            logging.info(
                 ":{}:Couldn't extract url from api call: {}".format(self.name, api_call))
             return None
+
+        if show_progress:
+            if url_found:
+                sys.stdout.write('.')
+            else:
+                sys.stdout.write('F')
+            sys.stdout.flush()
 
         return url_found
 

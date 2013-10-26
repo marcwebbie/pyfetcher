@@ -95,7 +95,7 @@ class Console(object):
             extractor = extractors.get_by_hostname(stream.host)
 
             if extractor:
-                download_url = extractor.raw_url(stream.id)
+                download_url = extractor.raw_url(stream.id, show_progress)
 
                 if download_url:
                     url_list.append(download_url)
@@ -105,7 +105,7 @@ class Console(object):
     @staticmethod
     def run(crawler, output_file=None, repeat=False):
         while True:
-            show_progress = True if output_file else False
+            show_progress = True if not output_file else False
             stream_list = Console.search(crawler)
 
             if stream_list:
