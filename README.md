@@ -25,12 +25,18 @@ pip uninstall pyfetcher
 
 # Quick start
 
-## Crawl the with default streamsite crawler:
+## Crawl with default streamsite crawler in iteractive mode:
 
 ```bash
 pyfetcher
 ```
 
+
+## Crawl with default streamsite crawler in iteractive mode with verbose output:
+
+```bash
+pyfetcher -v
+```
 
 ## Check the list of available crawlers:
 
@@ -46,25 +52,26 @@ pyfetcher -c <crawler_name>
 ```
 
 
-## Crawn and save urllist to a file
+## Crawn and save urllist to a file:
 
 ```bash
 pyfetcher -o <output_filename>
 ```
 
 
-## Crawn and return urllist as json
+## Crawn and return urllist as json:
 
 ```bash
 pyfetcher -j
 ```
 
 
-## Crawn and save urllist as json to a file
+## Crawn and save urllist as json to a file:
 
 ```bash
 pyfetcher -j -o
 ```
+
 
 # As a library
 
@@ -108,7 +115,7 @@ class Media(object):
 
 ### Stream: 
 
-Contain the direct stream info. those are build by crawler.extract using info extractors
+Contain the direct stream info. those are build by crawler.get_streams(media) calls using info extractors
 
 ```python
 class Stream(object):
