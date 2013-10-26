@@ -129,5 +129,3 @@ class Console(object):
 
             if not repeat:
                 break
-
-[cpf for (cpf, pessoa) in d.items() if pessoa[1] > 18]
