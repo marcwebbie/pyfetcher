@@ -18,7 +18,7 @@ except:
 from pyquery import PyQuery
 
 from pyfetcher import extractors
-from pyfetcher.crawlers.common import BaseCrawler, Search
+from pyfetcher.crawlers.common import BaseCrawler
 from pyfetcher.items import Media, Stream
 from pyfetcher.utils import async
 
@@ -27,11 +27,10 @@ class TubeplusCrawler(BaseCrawler):
 
     def __init__(self):
         super(TubeplusCrawler, self).__init__()  # to be ported
-        self.name = "tubeplus"
         self.description = "Crawler for the tubeplus streaming site"
         self.site_url = "http://www.tubeplus.me/"
 
-    def extract(self, media):
+    def get_streams(self, media):
         """ Return a list of Stream objects extracted from the media page url
 
         media must be of type Media

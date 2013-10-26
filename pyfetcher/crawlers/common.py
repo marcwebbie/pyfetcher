@@ -7,19 +7,38 @@ except:
 
 class BaseCrawler(object):
 
-    def __init__(self):
-        """
-        Subclasses of this one should re-define:
-            self.name:              Crawler name
-            self.site_url:          Crawler url
-            self.description:       Crawler description
+    """ BaseCrawler gives the default interface for crawlers.
+    It also add utility functions to be shared by sub classes.
 
-            search():               search a file by a given query
-            get_raw_urls():         get list of urls to video files for a giver url
-        """
-        self.name = None
+    Sub classes should override:
+        get_streams:
+        get_children:
+        search:
+    """
+
+    def __init__(self):
         self.description = None
         self.site_url = None
+
+    @property
+    def name(self):
+        class_name = self.__class__.__name__.lower().strip('crawler')
+        return class_name
+
+    def get_streams(self, media):
+        fmsg = 'Method get_streams is not overriden by: {}'
+        class_name = self.__class__.__name__
+        raise NotImplementedError(fmsg.format(class_name))
+
+    def get_children(self, media):
+        fmsg = 'Method get_children is not overriden by: {}'
+        class_name = self.__class__.__name__
+        raise NotImplementedError(fmsg.format(class_name))
+
+    def search(self, search_query):
+        fmsg = 'Method search is not overriden by: {}'
+        class_name = self.__class__.__name__
+        raise NotImplementedError(fmsg.format(class_name))
 
     @staticmethod
     def fetch_page(url):
@@ -32,34 +51,3 @@ class BaseCrawler(object):
         response = urlopen(req)
         content = response.read()
         return content
-
-
-class Search(object):
-
-    """
-    Search objects hold search results by crawlers
-
-        self.result: list of media retrieved by search
-    """
-
-    def __init__(self, result_list):
-        self.result_list = Search.normalize(result_list)
-
-    def get_item(code):
-        for item in (i for i in result_list if i.code == code):
-            # found an element, return the first
-            return item
-
-        return None
-
-    @staticmethod
-    def normalize(result_list):
-        """ Add code in sequence to choices without code and sort it by code """
-        try:
-            for idx, item in enumerate(m for m in result_list if not m.code):
-                item.code = idx + 1
-
-            return sorted(result_list, key=lambda x: x.code)
-        except TypeError:
-            sys.stderr.write("ERROR: choices isn't iterable")
-            pass

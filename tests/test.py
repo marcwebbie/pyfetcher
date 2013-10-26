@@ -21,7 +21,7 @@ class CrawlersTestCase(unittest.TestCase):
 
         media = medialist[0]
 
-        stream_list = crawler.extract(media)
+        stream_list = crawler.get_streams(media)
 
         for stream in stream_list:
             extractor = extractors.get_by_hostname(stream.host)

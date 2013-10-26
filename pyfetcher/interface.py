@@ -55,7 +55,7 @@ class Console(object):
 
     @staticmethod
     def get_streams(crawler, media):
-        stream_list = crawler.extract(media)
+        stream_list = crawler.get_streams(media)
 
         if not stream_list:
             logging.info(
