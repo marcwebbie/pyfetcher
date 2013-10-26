@@ -400,7 +400,7 @@ print('9D0D3AA0DE8B38A4')
 
         # request webpage again as POST with query params to get real video page
         response = urlopen(dest_url, query)
-        post_html = response.read()
+        post_html = str(response.read())
 
         # get api call url
         try:
