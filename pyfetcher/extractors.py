@@ -412,7 +412,7 @@ print('9D0D3AA0DE8B38A4')
             return None
 
         # get api call html
-        api_html = self.fetch_page(api_call)
+        api_html = str(self.fetch_page(api_call))
 
         # get video url
         url_found = None
