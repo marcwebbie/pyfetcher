@@ -417,8 +417,6 @@ print('9D0D3AA0DE8B38A4')
         # get video url
         url_found = None
         try:
-            import pdb
-            pdb.set_trace()
             url_rgx = re.compile(r'url="(http://[\w\-\.\?&/\=;%]*flv|mp4|avi|m4a)"')
             url_found = url_rgx.search(api_html).group(1)
         except (IndexError, AttributeError):
