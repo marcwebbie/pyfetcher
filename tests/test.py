@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 import logging
 import os
 import sys
@@ -28,7 +29,7 @@ class CrawlersTestCase(unittest.TestCase):
             download_url = None
 
             if extractor:
-                download_url = extractor.raw_url(stream.sid)
+                download_url = extractor.raw_url(stream.id)
 
             print(stream)
             print("└── Extractor = {}".format(extractor))
