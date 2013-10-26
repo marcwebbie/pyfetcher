@@ -31,14 +31,6 @@ class TubeplusCrawler(BaseCrawler):
         self.site_url = "http://www.tubeplus.me/"
 
     def get_streams(self, media):
-        """ Return a list of Stream objects extracted from the media page url
-
-        media must be of type Media
-
-        when show_progress is True it prints progress in form of '.' when 
-        a stream is sucessfully extracted or 'F' when extraction fails
-        """
-
         logging.info("Extracting: {}".format(media))
 
         if not media.url:
@@ -73,9 +65,6 @@ class TubeplusCrawler(BaseCrawler):
         return stream_list
 
     def get_children(self, media):
-        """ Returns all children Media retrieved from media url
-        """
-
         logging.info('Searching children for media: {}'.format(media.verbose_name))
 
         media_page = self.fetch_page(media.url)
